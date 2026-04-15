@@ -4,7 +4,14 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const response = await fetch("http://localhost:8080/api/v1/auth/register", {
+    const backendUrl = process.env.BACKEND_URL;
+    console.log("Calling Backend URL for register:", `${backendUrl}/api/v1/auth/register`);
+    
+    if (!backendUrl) {
+       return NextResponse.json({ error: "BACKEND_URL environment variable is missing" }, { status: 500 });
+    }
+
+    const response = await fetch(`${backendUrl}/api/v1/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

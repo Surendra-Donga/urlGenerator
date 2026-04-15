@@ -8,7 +8,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
     }
 
-    const response = await fetch("http://localhost:8080/api/v1/urls/shorten", {
+    const backendUrl = process.env.BACKEND_URL;
+    console.log("Calling Backend URL:", `${backendUrl}/api/v1/urls/shorten`);
+    
+    if (!backendUrl) {
+       return NextResponse.json({ error: "BACKEND_URL environment variable is missing" }, { status: 500 });
+    }
+
+    const response = await fetch(`${backendUrl}/api/v1/urls/shorten`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

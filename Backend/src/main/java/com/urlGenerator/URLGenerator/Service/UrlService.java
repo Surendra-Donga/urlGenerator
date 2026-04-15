@@ -21,8 +21,10 @@ public class UrlService {
     private final Random random = new Random();
 
     public Url shortenUrl(String originalUrl, String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = null;
+        if (username != null && !username.equals("anonymousUser")) {
+            user = userRepository.findByUsername(username).orElse(null);
+        }
 
         String shortCode = generateUniqueShortCode();
         Url url = Url.builder()

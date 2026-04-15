@@ -8,7 +8,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const response = await fetch("http://localhost:8080/api/v1/urls/my-urls", {
+    const backendUrl = process.env.BACKEND_URL;
+    console.log("Calling Backend URL for my-urls:", `${backendUrl}/api/v1/urls/my-urls`);
+    
+    if (!backendUrl) {
+       return NextResponse.json({ error: "BACKEND_URL environment variable is missing" }, { status: 500 });
+    }
+
+    const response = await fetch(`${backendUrl}/api/v1/urls/my-urls`, {
       method: "GET",
       headers: {
         "Authorization": auth,

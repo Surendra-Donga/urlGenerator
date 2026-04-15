@@ -4,11 +4,21 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ code: string }> }
 ) {
-  const code = (await params).code;
-  
-  // The backend handles the final redirect.
-  // We just redirect the browser to the backend redirection endpoint.
-  const backendUrl = `http://localhost:8080/api/v1/urls/${code}`;
-  
-  return NextResponse.redirect(backendUrl);
+  try {
+    const code = (await params).code;
+    
+    const backendBaseUrl = process.env.BACKEND_URL;
+    if (!backendBaseUrl) {
+      console.error("BACKEND_URL is not defined in environment variables");
+      return NextResponse.json({ error: "Backend URL configuration error" }, { status: 500 });
+    }
+
+    const backendUrl = `${backendBaseUrl}/api/v1/urls/${code}`;
+    
+    // Using a 307 Temporary Redirect which is safer for this case
+    return NextResponse.redirect(new URL(backendUrl), 307);
+  } catch (error: any) {
+    console.error("Redirect error:", error);
+    return NextResponse.json({ error: "An error occurred during redirection" }, { status: 500 });
+  }
 }
